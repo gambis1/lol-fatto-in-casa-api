@@ -1,4 +1,5 @@
 import express from "express";
+import http from "http";
 const app = express();
 app.use(express.static("public"));
 
@@ -38,8 +39,10 @@ app.use("/api/partita", partitaRoutes);
 app.use("/api/giocatore", giocatoreRoutes);
 app.use("/api/configurazioni", configurazioniRoutes);
 
+const server = http.createServer(app);
+
 import { WebSocketServer } from "ws";
-const webSocket = new WebSocketServer({ port: parseInt(process.env.PORT || '5000') });
+const webSocket = new WebSocketServer({ server });
 webSocket.on("connection", (socket) => {
   socket.on("message", (message) => {
     console.log("Received:", Buffer.from(message as Buffer).toString("utf8"));
@@ -55,12 +58,6 @@ webSocket.on("connection", (socket) => {
 // Create a Server
 const PORT: number = parseInt(process.env.PORT || "4000", 10);
 
-const server = app.listen(PORT, () => {
-  const addressInfo = server.address();
-
-  if (addressInfo && typeof addressInfo !== "string") {
-    console.log(`App in ascolto su http://${addressInfo.address}:${addressInfo.port}`);
-  } else {
-    console.log(`Server in ascolto sulla porta ${PORT}`);
-  }
+server.listen(PORT, () => {
+  console.log(`Server in ascolto sulla porta ${PORT}`);
 });
