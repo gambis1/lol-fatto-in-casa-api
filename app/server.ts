@@ -39,6 +39,8 @@ app.use("/api/partita", partitaRoutes);
 app.use("/api/giocatore", giocatoreRoutes);
 app.use("/api/configurazioni", configurazioniRoutes);
 
+// Create a Server
+
 const server = http.createServer(app);
 
 import { WebSocketServer } from "ws";
@@ -54,8 +56,6 @@ webSocket.on("connection", (socket) => {
     });
   });
 });
-
-// Create a Server
 const PORT: number = parseInt(process.env.PORT || "4000", 10);
 
 server.listen(PORT, () => {

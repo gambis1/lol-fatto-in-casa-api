@@ -1,5 +1,4 @@
 import Partita from "../models/partita.model";
-import Giocatore, { IGiocatore } from "../models/giocatore.model";
 import { Request, Response } from "express";
 
 const configTimer = {
@@ -18,25 +17,25 @@ export const getPartita = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
   try {
-    const item = new Partita({
+    const item = await Partita.create({
       id_partita: generateIdPartita(),
       fine_partita: false,
       timer: calcoloTimer(req.body.timerSelezionato),
       timerSelezionato: req.body.timerSelezionato,
       numeroMaxAmmonizioni: req.body.numeroMaxAmmonizioni,
-      azioneAttiva: "",
-      giocatori: req.body.giocatori.map((giocatore: IGiocatore) => {
-        return new Giocatore({
+      azioneAttiva: {
+        nome: "",
+        descrizione: ""
+      },
+      giocatori: req.body.giocatori.map((nome: string) => ({
           identificativo: generateIdGiocatore(),
-          nome: giocatore,
+          nome,
           ammonizioni: 0,
           espulso: false
-        });
-      })
+      }))
     });
 
-    let dati = await item.save();
-    res.send({ id_partita: dati.id_partita, esito: true, errori: [] });
+    res.send({ id_partita: item.id_partita, esito: true, errori: [] });
   } catch (err: any) {
     res.status(500).send({ message: err.message });
   }
@@ -63,7 +62,7 @@ export const generateIdGiocatore = () => {
 };
 
 const calcoloTimer = (timerSelezionato: string) => {
-  let timer = 0;
+  let timer: number;
   const splitTimer = timerSelezionato.split("-");
   timer = parseInt(splitTimer[0]) * configTimer[splitTimer[1] as keyof typeof configTimer];
   return timer;
@@ -90,7 +89,7 @@ export const update = async (req: Request, res: Response) => {
       }
     }
 
-    var dati = await item.save();
+    let dati = await item.save();
     res.send({ partita: dati, esito: true, errori: [] });
   } catch (err: any) {
     res.status(500).send({ message: err.message });

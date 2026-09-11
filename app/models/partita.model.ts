@@ -7,9 +7,22 @@ export interface IPartita extends Document {
   timer: number;
   timerSelezionato: string;
   numeroMaxAmmonizioni: number;
-  azioneAttiva: string;
+  azioneAttiva: IAzione;
   giocatori: IGiocatore[];
 }
+
+export interface IAzione {
+  nome: string;
+  descrizione: string;
+}
+
+const AzioneSchema: Schema = new Schema<IAzione>(
+  {
+    nome: { type: String, required: false },
+    descrizione: { type: String, required: false }
+  },
+  { _id: false }
+);
 
 const PartitaSchema: Schema = new Schema({
   id_partita: { type: String, required: true },
@@ -17,7 +30,7 @@ const PartitaSchema: Schema = new Schema({
   timer: { type: Number, required: false },
   timerSelezionato: { type: String, required: false },
   numeroMaxAmmonizioni: { type: Number, required: false },
-  azioneAttiva: { type: String, required: false },
+  azioneAttiva: AzioneSchema,
   giocatori: [GiocatoreSchema]
 });
 
