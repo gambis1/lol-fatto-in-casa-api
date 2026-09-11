@@ -39,7 +39,7 @@ app.use("/api/giocatore", giocatoreRoutes);
 app.use("/api/configurazioni", configurazioniRoutes);
 
 import { WebSocketServer } from "ws";
-const webSocket = new WebSocketServer({ port: 5000 });
+const webSocket = new WebSocketServer({ port: parseInt(process.env.PORT || '5000') });
 webSocket.on("connection", (socket) => {
   socket.on("message", (message) => {
     console.log("Received:", Buffer.from(message as Buffer).toString("utf8"));
